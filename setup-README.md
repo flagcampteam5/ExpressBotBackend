@@ -44,7 +44,7 @@ git checkout -b [your branch name]
 After you edit ExpressBotBackend/week1-checkoff.txt by appending your name to it, remember to add, commit and push. 
 
 ```
-git add
+git add ExpressBotBackend/week1-checkoff.txt
 git commit -m "[your message]"
 git push origin
 ```
