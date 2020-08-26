@@ -12,6 +12,8 @@ public class Item {
 	private Set<String> addressTo;
 	private String parcelSender;
 	private String parcelReceiver;
+	private String station1;
+	private String station2;
 	private String bot1;
 	private String bot2;
 	private String phase;
@@ -22,6 +24,8 @@ public class Item {
 		this.addressTo = builder.addressTo;
 		this.parcelSender = builder.parcelSender;
 		this.parcelReceiver = builder.parcelReceiver;
+		this.station1 = builder.station1;
+		this.station2 = builder.station2;
 		this.bot1 = builder.bot1;
 		this.bot2 = builder.bot2;
 		this.phase = builder.phase;
@@ -43,6 +47,12 @@ public class Item {
 	public String getParcelReceiver() {
 		return parcelReceiver;
 	}
+	public String getStation1() {
+		return station1;
+	}
+	public String getStation2() {
+		return station2;
+	}
 	public String getBot1() {
 		return bot1;
 	}
@@ -60,6 +70,8 @@ public class Item {
 		obj.put("addressTo", new JSONArray(addressTo));
 		obj.put("parcelSender", parcelSender);
 		obj.put("parcelReceiver", parcelReceiver);
+		obj.put("station1", station1);
+		obj.put("station2", station2);
 		obj.put("bot1", bot1);
 		obj.put("bot2", bot2);
 		obj.put("phase", phase);
@@ -72,6 +84,8 @@ public class Item {
 		private Set<String> addressTo;
 		private String parcelSender;
 		private String parcelReceiver;
+		private String station1;
+		private String station2;
 		private String bot1;
 		private String bot2;
 		private String phase;
@@ -94,6 +108,14 @@ public class Item {
 		}
 		public ItemBuilder setParcelReceiver(String parcelReceiver) {
 			this.parcelReceiver = parcelReceiver;
+			return this;
+		}
+		public ItemBuilder setStation1(String station1) {
+			this.station1 = station1;
+			return this;
+		}
+		public ItemBuilder setStation2(String station2) {
+			this.station2 = station2;
 			return this;
 		}
 		public ItemBuilder setBot1(String bot1) {
