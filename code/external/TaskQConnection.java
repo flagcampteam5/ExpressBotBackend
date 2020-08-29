@@ -1,8 +1,9 @@
 package external;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
-import org.json.JSONObject;
+import java.util.Map;
 
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sqs.SqsClient;
@@ -10,6 +11,7 @@ import software.amazon.awssdk.services.sqs.model.DeleteMessageRequest;
 import software.amazon.awssdk.services.sqs.model.ListQueuesRequest;
 import software.amazon.awssdk.services.sqs.model.ListQueuesResponse;
 import software.amazon.awssdk.services.sqs.model.Message;
+import software.amazon.awssdk.services.sqs.model.MessageAttributeValue;
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 
@@ -25,7 +27,12 @@ public class TaskQConnection {
 		}
 	}
 
-	public void enqueue(String queueName, JSONObject obj) {
+	public synchronized void enqueue(String queueName, String bot, String orderId) {
+		final Map<String, MessageAttributeValue> messageAttributes = new HashMap<>();
+
+		messageAttributes.put("transporter",
+				MessageAttributeValue.builder().dataType("String").stringValue(bot).build());
+
 		// search queue with filter
 		ListQueuesRequest filterListRequest = ListQueuesRequest.builder().queueNamePrefix(queueName).build();
 
@@ -33,12 +40,13 @@ public class TaskQConnection {
 		// write one task (JSON or XML) into queue
 		for (String url : listQueuesFilteredResponse.queueUrls()) {
 			System.out.println("\nEnqueue for queue" + queueName);
-			sqsClient.sendMessage(
-					SendMessageRequest.builder().queueUrl(url).messageBody(obj.toString()).delaySeconds(0).build());
+			sqsClient.sendMessage(SendMessageRequest.builder().queueUrl(url).messageAttributes(messageAttributes)
+					.messageBody(orderId).delaySeconds(0).build());
 		}
+		notifyAll();
 	}
 
-	public synchronized Message dequeue(String queueName) {
+	public synchronized Message dequeue(String queueName, String bot) {
 		// search queue with filter
 		ListQueuesRequest filterListRequest = ListQueuesRequest.builder().queueNamePrefix(queueName).build();
 
@@ -48,7 +56,23 @@ public class TaskQConnection {
 		System.out.println("\nDequeue for queue" + queueName);
 		ReceiveMessageRequest receiveMessageRequest = ReceiveMessageRequest.builder().queueUrl(url)
 				.maxNumberOfMessages(1).build();
-		List<Message> messages = sqsClient.receiveMessage(receiveMessageRequest).messages();
+
+		List<Message> messages = new ArrayList<>();
+		while (messages.isEmpty()) {
+			messages = sqsClient.receiveMessage(receiveMessageRequest).messages();
+			if (messages.isEmpty()) {
+				try {
+					wait();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		Message task = messages.get(0);
+		if (task.attributesAsStrings().get("transporter") == "uav") {
+			return null;
+		}
 
 		// delete the task message from queue
 		for (Message message : messages) {
@@ -56,7 +80,7 @@ public class TaskQConnection {
 					.receiptHandle(message.receiptHandle()).build();
 			sqsClient.deleteMessage(deleteMessageRequest);
 		}
-		return messages.get(0);
+		return task;
 	}
 
 }
