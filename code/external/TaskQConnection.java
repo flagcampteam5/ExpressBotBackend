@@ -27,22 +27,11 @@ public class TaskQConnection {
 		}
 	}
 
-	public synchronized void enqueue(String queueName, String[] attributes, String m) {
+	public synchronized void enqueue(String queueName, String bot, String orderId) {
 		final Map<String, MessageAttributeValue> messageAttributes = new HashMap<>();
-		messageAttributes.put("phase",
-				MessageAttributeValue.builder().dataType("String").stringValue(attributes[0]).build());
 
-		messageAttributes.put("toStation",
-				MessageAttributeValue.builder().dataType("String").stringValue(attributes[1]).build());
-
-		messageAttributes.put("orderId",
-				MessageAttributeValue.builder().dataType("String").stringValue(attributes[2]).build());
-
-		messageAttributes.put("bot1",
-				MessageAttributeValue.builder().dataType("String").stringValue(attributes[3]).build());
-
-		messageAttributes.put("bot2",
-				MessageAttributeValue.builder().dataType("String").stringValue(attributes[4]).build());
+		messageAttributes.put("transporter",
+				MessageAttributeValue.builder().dataType("String").stringValue(bot).build());
 
 		// search queue with filter
 		ListQueuesRequest filterListRequest = ListQueuesRequest.builder().queueNamePrefix(queueName).build();
@@ -52,7 +41,7 @@ public class TaskQConnection {
 		for (String url : listQueuesFilteredResponse.queueUrls()) {
 			System.out.println("\nEnqueue for queue" + queueName);
 			sqsClient.sendMessage(SendMessageRequest.builder().queueUrl(url).messageAttributes(messageAttributes)
-					.messageBody(m).delaySeconds(0).build());
+					.messageBody(orderId).delaySeconds(0).build());
 		}
 		notifyAll();
 	}
@@ -80,8 +69,8 @@ public class TaskQConnection {
 				}
 			}
 		}
-		
-		if (phase == "1" && bot1 == "uav" || phase == "2" && bot2 == "uav") {
+		Message task = messages.get(0);
+		if (task.attributesAsStrings().get("transporter") == "uav") {
 			return null;
 		}
 
@@ -91,7 +80,7 @@ public class TaskQConnection {
 					.receiptHandle(message.receiptHandle()).build();
 			sqsClient.deleteMessage(deleteMessageRequest);
 		}
-		return messages.get(0);
+		return task;
 	}
 
 }

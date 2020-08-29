@@ -37,23 +37,11 @@ public class SqsTest {
 			addressTo.add("Tolatitude" + i);
 			
 			// prepare one task record to enqueue
-			Item item = new ItemBuilder()
-					.setItemId("" + i)
-					.setAddressFrom(addressFrom)
-					.setAddressTo(addressTo)
-					.setParcelSender("Sender" + i)
-					.setParcelReceiver("Receiver" + i)
-					.setStation1(queuesName[i])
-					.setStation2(queuesName[(i + 1) % 3])
-					.setBot1("robot")
-					.setBot2("uav")
-					.setPhase("" + (i % 2 + 1))
-					.build();
 			
 			// enqueue operation
-			String[] attributes = new String[] {item.getPhase(), item.getStation2(),
-					item.getItemId(), item.getBot1(), item.getBot2()};
-			conn.enqueue(queuesName[i], attributes, item.toJSONObject().toString());
+			String transporter = "robot";
+			String orderId = "1234";
+			conn.enqueue(queuesName[i], transporter, orderId);
 			
 		}
 		

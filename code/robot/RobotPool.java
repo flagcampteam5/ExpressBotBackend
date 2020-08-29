@@ -3,8 +3,6 @@ package robot;
 import java.util.ArrayList;
 import java.util.List;
 
-import external.TaskQConnection;
-
 public class RobotPool {
 	public static void main(String[] args) {
 		
