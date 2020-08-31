@@ -36,35 +36,7 @@ public class MySQLConnection {
 			}
 		}
 	}
-	
-//	public void saveItem(Item item) {
-//		if (conn == null) {
-//			System.err.println("DB connection failed");
-//			return;
-//		}
-//		String sql = "INSERT IGNORE INTO items VALUES (?, ?, ?, ?, ?)";
-//		try {
-//			PreparedStatement statement = conn.prepareStatement(sql);
-//			statement.setString(1, item.getItemId());
-//			statement.setString(2, item.getName());
-//			statement.setString(3, item.getAddress());
-//			statement.setString(4, item.getImageUrl());
-//			statement.setString(5, item.getUrl());
-//			statement.executeUpdate();
-//
-//			sql = "INSERT IGNORE INTO keywords VALUES (?, ?)";
-//			statement = conn.prepareStatement(sql);
-//			statement.setString(1, item.getItemId());
-//			for (String keyword : item.getKeywords()) {
-//				statement.setString(2, keyword);
-//				statement.executeUpdate();
-//			}
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
-//	}
-	
-	
+
 	//implement the API 1:  getOrder()
 	public TransactionItem getOrder(String transId) {
 		if (conn == null) {
@@ -99,48 +71,6 @@ if (rs.next()) {
 		return item;
 	}
 
-//	public Set<String> getOrder(String transId) {
-//		if (conn == null) {
-//			System.err.println("DB connection failed");
-//			return new HashSet<>();
-//		}		
-//		Set<String> OrderItems = new HashSet<>();	
-//
-//		try {
-//			String sql = "SELECT * FROM transactions WHERE trans_id = ?";
-//			
-//			PreparedStatement statement = conn.prepareStatement(sql);
-//			statement.setString(1, transId);
-//			ResultSet rs = statement.executeQuery();
-//
-//				while (rs.next()) {
-//					String pickUpLat = rs.getString("pick_up_lat");
-//					OrderItems.add(pickUpLat);
-//					
-//					String pickUpLon = rs.getString("pick_up_lon");
-//					OrderItems.add(pickUpLon);
-//					
-//					String deviceStationLat = rs.getString("device_station_lat");
-//					OrderItems.add(deviceStationLat);
-//					
-//					String deviceStationLon = rs.getString("device_station_lon");
-//					OrderItems.add(deviceStationLon);
-//					
-//					String deviceLocationLat = rs.getString("device_location_lat");
-//					OrderItems.add(deviceLocationLat);
-//					
-//					String deviceLocationLon = rs.getString("device_location_lon");
-//					OrderItems.add(deviceLocationLon);
-//					
-//					String statusId = rs.getString("status_id");
-//					OrderItems.add(statusId);
-//				
-//				}
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
-//		return OrderItems;
-//	}
 	//implement the API 2 : updateOrderStatus()
 	public void updateOrderStatus(String transId, int newStatus_id) {
 		if(conn == null) {
