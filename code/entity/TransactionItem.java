@@ -1,14 +1,11 @@
 package entity;
 
-import java.sql.Timestamp;
-
 import org.json.JSONObject;
 
 public class TransactionItem {
 	
 	private String trans_id;	
-	private int station_id; //maybe char
-	// private int end_station_id;  //maybe char
+	private int station_id; 
 	private boolean start_device_is_robot;
 	private boolean end_device_is_robot;
 	private int status_id;
@@ -16,19 +13,16 @@ public class TransactionItem {
 	private double pick_up_lon;
 	private double deliver_location_lat;
 	private double deliver_location_lon;
-	// private Timestamp timestamp;//class?
+	private int timestamp;
 	
 	public String getTrans_id() {
 		return trans_id;
 	}
 
-	public int getStart_station_id() {
-		return start_station_id;
+	public int getStation_id() {
+		return station_id;
 	}
 
-	public int getEnd_station_id() {
-		return end_station_id;
-	}
 
 	public boolean isStart_device_is_robot() {
 		return start_device_is_robot;
@@ -58,15 +52,14 @@ public class TransactionItem {
 		return deliver_location_lon;
 	}
 
-	public Timestamp getTimestamp() {
+	public int getTimestamp() {
 		return timestamp;
 	}
 	
 
 	private TransactionItem(TransactionItemBuilder builder) {
 		this.trans_id = builder.trans_id;
-		this.start_station_id = builder.start_station_id;
-		this.end_station_id = builder.end_station_id;
+		this.station_id = builder.station_id;
 		this.start_device_is_robot = builder.start_device_is_robot;
 		this.end_device_is_robot = builder.end_device_is_robot;
 		this.status_id = builder.status_id;
@@ -74,17 +67,14 @@ public class TransactionItem {
 		this.pick_up_lon = builder.pick_up_lon;
 		this.deliver_location_lat = builder.deliver_location_lat;
 		this.deliver_location_lon = builder.deliver_location_lon;
-		this.timestamp = builder.timestamp;
-		
+		this.timestamp = builder.timestamp;		
 	}
 
 	
 	public JSONObject toJSONObject() {
 		JSONObject obj = new JSONObject();
 		obj.put("trans_id", trans_id);
-		
-		obj.put("start_station_id", start_station_id);
-		obj.put("end_station_id", end_station_id);
+		obj.put("station_id", station_id);
 		obj.put("start_device_is_robot", start_device_is_robot);
 		obj.put("end_device_is_robot", end_device_is_robot);
 		obj.put("status_id", status_id);
@@ -99,8 +89,7 @@ public class TransactionItem {
 	public static class TransactionItemBuilder {
 		
 		private String trans_id;
-		private int start_station_id;
-		private int end_station_id;
+		private int station_id;
 		private boolean start_device_is_robot;
 		private boolean end_device_is_robot;
 		public int status_id;
@@ -108,19 +97,14 @@ public class TransactionItem {
 		public double pick_up_lon;
 		public double deliver_location_lat;
 		public double deliver_location_lon;
-		public Timestamp timestamp;
-		
+		public int timestamp;
 		
 		public void setTrans_id(String trans_id) {
 			this.trans_id = trans_id;
 		}
 
-		public void setStart_station_id(int start_station_id) {
-			this.start_station_id = start_station_id;
-		}
-
-		public void setEnd_station_id(int end_station_id) {
-			this.end_station_id = end_station_id;
+		public void setStation_id(int station_id) {
+			this.station_id = station_id;
 		}
 
 		public void setStart_device_is_robot(boolean start_device_is_robot) {
@@ -151,11 +135,10 @@ public class TransactionItem {
 			this.deliver_location_lon = deliver_location_lon;
 		}
 
-		public void setTimestamp(Timestamp timestamp) {
+		public void setTimestamp(int timestamp) {
 			this.timestamp = timestamp;
 		}
 		
-
 		public TransactionItem build() {
 			return new TransactionItem(this);
 		}
