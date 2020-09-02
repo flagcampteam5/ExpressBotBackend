@@ -10,6 +10,8 @@ import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 
 import db.MySQLConnection;
+import entity.TransactionItem;
+import entity.TransactionItem.TransactionItemBuilder;
 import external.TaskQConnection;
 
 /**
@@ -38,27 +40,36 @@ public class PlaceOrder extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		// data model from front-end, need to convert it to data model for DB
-		final String[] ATTRIBUTES = new String[]{"order_id", "bot", "station"};
-		String[] orderParams;
+//		final String[] ATTRIBUTES = new String[]{"pickUpLat","pickUpLng","destinationLat",
+//		           "destinationLng", "order_id", "station_id", "isRobot", "timestamp"};
+		
+		TransactionItemBuilder transactionItemBuilder = new TransactionItem.TransactionItemBuilder();
 		
 		// read order_info from HTTP body
 		JSONObject input = new JSONObject(IOUtils.toString(request.getReader()));
-		for (int i = 0; i < ATTRIBUTES.length; i++) {
-			orderParams[i] = input.getString(ATTRIBUTES[i]);
-		}
+		
+		transactionItemBuilder.setDeliver_location_lat(input.getDouble("destinationLat"));
+		transactionItemBuilder.setDeliver_location_lon(input.getDouble("destinationLng"));		
+		transactionItemBuilder.setEnd_device_is_robot(input.getBoolean("isRobot"));
+		transactionItemBuilder.setStart_device_is_robot(input.getBoolean("isRobot"));
+		transactionItemBuilder.setPick_up_lat(input.getDouble("pickUpLat"));
+		transactionItemBuilder.setPick_up_lon(input.getDouble("pickUpLng"));		
+		transactionItemBuilder.setStation_id(input.getInt("station_id"));
+		transactionItemBuilder.setStatus_id(0);		
+		transactionItemBuilder.setTimestamp(input.getInt("timestamp"));
+		transactionItemBuilder.setTrans_id(input.getString("order_id"));
 		
 		// insert a task into task_queue based on station
-		TaskQConnection queueConnection = new TaskQConnection();
-		queueConnection.enqueue(orderParams[2], orderParams[1], orderParams[0]);
+//		TaskQConnection queueConnection = new TaskQConnection();
+//		queueConnection.enqueue(input.getInt("station_id"), input.getBoolean("isRobot"), input.getString("order_id"));
 		
 		// add an order_item into DB 
 		MySQLConnection connection = new MySQLConnection();
 		JSONObject obj = new JSONObject();
-		if (connection.addOrder(orderParams)) {
-			obj.put("status", "OK");
-		} else {
-			obj.put("status", "Failed");
-		}
+		
+		connection.createOrder(transactionItemBuilder.build());
+		obj.put("status", "OK");
+		
 		connection.close();
 		
 		// return status for front-end client
