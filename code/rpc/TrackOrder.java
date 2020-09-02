@@ -1,19 +1,17 @@
 package rpc;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONArray;
+
 import org.json.JSONObject;
 
 import db.MySQLConnection;
-import entity.Item;
+import entity.TransactionItem;
 
 /**
  * Servlet implementation class TrackOrder
@@ -38,18 +36,19 @@ public class TrackOrder extends HttpServlet {
 		
 		// query DB to fetch the corresponding order_state
 		MySQLConnection connection = new MySQLConnection();
-		Map<String, String> orderInfo = connection.getOrderItem(orderId);
+		TransactionItem orderInfo = connection.getOrder(orderId);
 		connection.close();
 		
 		// convert data type returned by DB_client to a JSON object
 		JSONObject obj = new JSONObject();
-		obj.put("station", new String[]{orderInfo.get("stationLat"),orderInfo.get("stationLon")});
-		obj.put("start", new String[]{orderInfo.get("startLat"),orderInfo.get("startLon")});
-		obj.put("end", new String[]{orderInfo.get("endLat"),orderInfo.get("endLon")});
-		obj.put("mid1", new String[]{orderInfo.get("mid1Lat"),orderInfo.get("mid1Lon")});
-		obj.put("mid2", new String[]{orderInfo.get("mid2Lat"),orderInfo.get("mid2Lon")});
-		obj.put("orderState", orderInfo.get("orderState"));
-		
+		obj.put("pickUpLat", new String[]{Double.toString(orderInfo.getPick_up_lat())});
+		obj.put("pickUpLng", new String[]{Double.toString(orderInfo.getPick_up_lon())});		
+		obj.put("destinationLat", new String[]{Double.toString(orderInfo.getDeliver_location_lat())});
+		obj.put("destinationLng", new String[]{Double.toString(orderInfo.getDeliver_location_lon())});	
+		obj.put("station_id", new String[]{Integer.toString(orderInfo.getStation_id())});
+		obj.put("status_id", new String[]{Integer.toString(orderInfo.getStatus_id())});
+		obj.put("isRobot", new String[]{Boolean.toString(orderInfo.isStart_device_is_robot())});
+				
 		// return a JSON object for front-end client
 		RpcHelper.writeJsonObject(response, obj);
 	}
