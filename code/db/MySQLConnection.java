@@ -5,11 +5,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.HashSet;
-import java.util.Set;
-
-//import entity.Item;
 import entity.TransactionItem;
 import entity.TransactionItem.TransactionItemBuilder;
 
@@ -18,7 +13,6 @@ public class MySQLConnection {
 
 	public MySQLConnection() {
 		try {
-			// connect to MySQL, MySQLTableCreation used it too
 			Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
 			conn = DriverManager.getConnection(MySQLDBUtil.URL);
 
@@ -37,7 +31,6 @@ public class MySQLConnection {
 		}
 	}
 
-	//implement the API 1:  getOrder()
 	public TransactionItem getOrder(String transId) {
 		if (conn == null) {
 			System.err.println("DB connection failed");
@@ -50,10 +43,9 @@ public class MySQLConnection {
 			ResultSet rs = statement.executeQuery();
 
 			TransactionItemBuilder builder = new TransactionItemBuilder();
-if (rs.next()) {
+			if (rs.next()) {
 				builder.setTrans_id(rs.getString("trans_id"));
-				builder.setStart_station_id(rs.getInt("start_station_id"));
-				builder.setEnd_station_id(rs.getInt("end_station_id"));
+				builder.setStation_id(rs.getInt("Station_id"));
 				builder.setStart_device_is_robot(rs.getBoolean("start_device_is_robot"));
 				builder.setEnd_device_is_robot(rs.getBoolean("end_device_is_robot"));
 				builder.setStatus_id(rs.getInt("status_id"));
@@ -61,9 +53,8 @@ if (rs.next()) {
 				builder.setPick_up_lon(rs.getDouble("pick_up_lon"));
 				builder.setDeliver_location_lat(rs.getDouble("deliver_location_lat"));
 				builder.setDeliver_location_lon(rs.getDouble("deliver_location_lon"));
-				builder.setTimestamp(rs.getTimestamp("timestamp"));
+				builder.setTimestamp(rs.getInt("timestamp"));
 				item = builder.build();
-
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -71,23 +62,21 @@ if (rs.next()) {
 		return item;
 	}
 
-	//implement the API 2 : updateOrderStatus()
 	public void updateOrderStatus(String transId, int newStatus_id) {
 		if(conn == null) {
 			System.err.println("DB connection failed");
 			return;
 		}
-		String sql = "UPDATE transactions SET status_is = newStatus_id WHERE trans_id = ?";
+		String sql = "UPDATE transactions SET status_id = newStatus_id WHERE trans_id = ?";
 		try {
 			PreparedStatement statement = conn.prepareStatement(sql);
 			statement.setLong(1,newStatus_id);
 			
-		}catch (SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
-	// implement the API 3: createOrder()
 	public void createOrder(TransactionItem item) {
 		if(conn == null) {
 			System.err.println("DB connection failed");
@@ -97,17 +86,16 @@ if (rs.next()) {
 		try {
 			PreparedStatement statement = conn.prepareStatement(sql);
 			statement.setString(1, item.getTrans_id());
-			statement.setLong(2, item.getStart_station_id());
-			statement.setLong(3, item.getEnd_station_id());
-			statement.setBoolean(4, item.isStart_device_is_robot());
-			statement.setBoolean(5, item.isEnd_device_is_robot());
-			statement.setLong(6, item.getStatus_id());
-			statement.setDouble(7, item.getPick_up_lat());
-			statement.setDouble(8, item.getPick_up_lon());
-			statement.setDouble(9, item.getDeliver_location_lat());
-			statement.setDouble(10, item.getDeliver_location_lon());
-			statement.setTimestamp(11, item.getTimestamp());
-		}catch (SQLException e) {
+			statement.setInt(2, item.getStation_id());
+			statement.setBoolean(3, item.isStart_device_is_robot());
+			statement.setBoolean(4, item.isEnd_device_is_robot());
+			statement.setInt(5, item.getStatus_id());
+			statement.setDouble(6, item.getPick_up_lat());
+			statement.setDouble(7, item.getPick_up_lon());
+			statement.setDouble(8, item.getDeliver_location_lat());
+			statement.setDouble(9, item.getDeliver_location_lon());
+			statement.setInt(10, item.getTimestamp());
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
@@ -120,8 +108,7 @@ if (rs.next()) {
 		TransactionItemBuilder builder = new TransactionItemBuilder();
 		
 		builder.setTrans_id("abc123456789");	
-		builder.setStart_station_id(1);
-		builder.setEnd_station_id(3);
+		builder.setStation_id(1);
 		builder.setStart_device_is_robot(true);		
 		builder.setEnd_device_is_robot(false);
 		builder.setStatus_id(2);
@@ -129,7 +116,7 @@ if (rs.next()) {
 		builder.setPick_up_lon(30.0);
 		builder.setDeliver_location_lat(-100.0);
 		builder.setDeliver_location_lon(10.0);
-		builder.setTimestamp(Timestamp.valueOf("2020-08-30 00:00:00"));
+		builder.setTimestamp(123456789);
 	
 		s.createOrder(builder.build());
 	}
