@@ -60,8 +60,9 @@ public class PlaceOrder extends HttpServlet {
 		transactionItemBuilder.setTrans_id(input.getString("order_id"));
 		
 		// insert a task into task_queue based on station
-//		TaskQConnection queueConnection = new TaskQConnection();
-//		queueConnection.enqueue(input.getInt("station_id"), input.getBoolean("isRobot"), input.getString("order_id"));
+		TaskQConnection queueConnection = new TaskQConnection();
+		String botType = input.getBoolean("isRobot") ? "robot" : "drone";
+		queueConnection.enqueue(String.valueOf(input.getInt("station_id")), botType, input.getString("order_id"));
 		
 		// add an order_item into DB 
 		MySQLConnection connection = new MySQLConnection();

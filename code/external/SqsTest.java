@@ -2,19 +2,10 @@ package external;
 
 /**
  * this class is for demonstrating how to enqueue and dequeue task queues. 
- * Each station has its own unique task queue, i.e., "a", or "b", or "c".
+ * Each station has its own unique task queue, i.e., "1", or "2", or "3".
  * Placing order RPC only need to call enqueue API.
- * enqueue(String, JSONObject).
  */
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import entity.Item;
-import entity.Item.ItemBuilder;
-import software.amazon.awssdk.services.sqs.model.Message;
 
 public class SqsTest {
 	public static void main(String[] args) {
@@ -22,40 +13,28 @@ public class SqsTest {
 		TaskQConnection conn = new TaskQConnection();
 		
 		// store queue names
-		String[] queuesName = {"a", "b", "c"};
+		String[] queuesName = {"1", "2", "3"};
 		
 		// use a for loop to write one task for each station
-		for (int i = 0; i < 3; i++) {
-			// set lat and lng for start address
-			Set<String> addressFrom = new HashSet<>();
-			addressFrom.add("Fromlongitude" + i);
-			addressFrom.add("Fromlatitude" + i);
-			
-			// set lat and lng for destination address
-			Set<String> addressTo = new HashSet<>();
-			addressTo.add("Tolongitude" + i);
-			addressTo.add("Tolatitude" + i);
-			
+		for (int i = 0; i < 3; i++) {		
 			// prepare one task record to enqueue
-			
-			// enqueue operation
 			String transporter = "robot";
-			String orderId = "1234";
-			conn.enqueue(queuesName[i], transporter, orderId);
-			
+			String orderId = "0" + i;
+			// enqueue operation
+			conn.enqueue(queuesName[0], transporter, orderId);			
 		}
 		
-		List<Message> messages = new ArrayList<>();
+//		List<Message> messages = new ArrayList<>();
 		// read one task from each queue
-		for (String queueName : queuesName) {
-			// dequeue operation
-			messages.add(conn.dequeue(queueName, "robot"));
-		}
-		
-		for (Message m : messages) {
-			// parse each message
-			System.out.println(m.body());
-		}		
+//		for (String queueName : queuesName) {
+//			// dequeue operation
+//			messages.add(conn.dequeue(queueName, "robot"));
+//		}
+//		
+//		for (Message m : messages) {
+//			// parse each message
+//			System.out.println(m.body());
+//		}		
 	}
 
 }

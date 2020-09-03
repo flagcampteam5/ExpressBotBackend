@@ -41,9 +41,9 @@ public class TaskQConnection {
 		for (String url : listQueuesFilteredResponse.queueUrls()) {
 			System.out.println("\nEnqueue for queue" + queueName);
 			sqsClient.sendMessage(SendMessageRequest.builder().queueUrl(url).messageAttributes(messageAttributes)
-					.messageBody(orderId).delaySeconds(0).build());
+					.messageBody(bot.concat(orderId)).delaySeconds(0).build());
 		}
-		notifyAll();
+		// notifyAll();
 	}
 
 	public synchronized Message dequeue(String queueName, String bot) {
@@ -53,7 +53,7 @@ public class TaskQConnection {
 		ListQueuesResponse listQueuesFilteredResponse = sqsClient.listQueues(filterListRequest);
 		String url = listQueuesFilteredResponse.queueUrls().get(0);
 		// read one task from queue
-		System.out.println("\nDequeue for queue" + queueName);
+		// System.out.println("\nDequeue for queue" + queueName);
 		ReceiveMessageRequest receiveMessageRequest = ReceiveMessageRequest.builder().queueUrl(url)
 				.maxNumberOfMessages(1).build();
 
@@ -62,15 +62,17 @@ public class TaskQConnection {
 			messages = sqsClient.receiveMessage(receiveMessageRequest).messages();
 			if (messages.isEmpty()) {
 				try {
-					wait();
-				} catch (InterruptedException e) {
+					// wait();
+					return null;
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 		}
 		Message task = messages.get(0);
-		if (task.attributesAsStrings().get("transporter") == "uav") {
+		// System.out.println(task.body());
+		if (!task.body().substring(0,5).equals(bot)) {
 			return null;
 		}
 
