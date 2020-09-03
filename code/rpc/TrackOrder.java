@@ -33,6 +33,7 @@ public class TrackOrder extends HttpServlet {
 		
 		// read order_id from parameter part of an URL
 		String orderId = request.getParameter("order_id");
+		// System.out.println(orderId);
 		
 		// query DB to fetch the corresponding order_state
 		MySQLConnection connection = new MySQLConnection();

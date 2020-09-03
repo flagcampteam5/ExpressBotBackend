@@ -40,12 +40,13 @@ public class MySQLConnection {
 		TransactionItem item = null;
 		try {
 			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setString(1, transId);
 			ResultSet rs = statement.executeQuery();
 
 			TransactionItemBuilder builder = new TransactionItemBuilder();
 			if (rs.next()) {
 				builder.setTrans_id(rs.getString("trans_id"));
-				builder.setStation_id(rs.getInt("Station_id"));
+				builder.setStation_id(rs.getInt("station_id"));
 				builder.setStart_device_is_robot(rs.getBoolean("start_device_is_robot"));
 				builder.setEnd_device_is_robot(rs.getBoolean("end_device_is_robot"));
 				builder.setStatus_id(rs.getInt("status_id"));
@@ -67,10 +68,12 @@ public class MySQLConnection {
 			System.err.println("DB connection failed");
 			return;
 		}
-		String sql = "UPDATE transactions SET status_id = newStatus_id WHERE trans_id = ?";
+		String sql = "UPDATE transactions SET status_id = ? WHERE trans_id = ?";
 		try {
 			PreparedStatement statement = conn.prepareStatement(sql);
-			statement.setLong(1,newStatus_id);
+			statement.setInt(1,newStatus_id);
+			statement.setString(2, transId);
+			statement.executeUpdate();
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -82,7 +85,7 @@ public class MySQLConnection {
 			System.err.println("DB connection failed");
 			return;
 		}
-		String sql = "INSERT IGNORE INTO items VALUES(?,?,?,?,?,?,?,?,?,?,?)";
+		String sql = "INSERT IGNORE INTO transactions VALUES(?,?,?,?,?,?,?,?,?,?)";
 		try {
 			PreparedStatement statement = conn.prepareStatement(sql);
 			statement.setString(1, item.getTrans_id());
@@ -95,6 +98,7 @@ public class MySQLConnection {
 			statement.setDouble(8, item.getDeliver_location_lat());
 			statement.setDouble(9, item.getDeliver_location_lon());
 			statement.setInt(10, item.getTimestamp());
+			statement.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -103,22 +107,22 @@ public class MySQLConnection {
 	
 	
 	//test ///////////////////////////////////
-	public static void main(String[] args) {
-		MySQLConnection s = new MySQLConnection();
-		TransactionItemBuilder builder = new TransactionItemBuilder();
-		
-		builder.setTrans_id("abc123456789");	
-		builder.setStation_id(1);
-		builder.setStart_device_is_robot(true);		
-		builder.setEnd_device_is_robot(false);
-		builder.setStatus_id(2);
-		builder.setPick_up_lat(-120.0);
-		builder.setPick_up_lon(30.0);
-		builder.setDeliver_location_lat(-100.0);
-		builder.setDeliver_location_lon(10.0);
-		builder.setTimestamp(123456789);
-	
-		s.createOrder(builder.build());
-	}
+//	public static void main(String[] args) {
+//		MySQLConnection s = new MySQLConnection();
+//		TransactionItemBuilder builder = new TransactionItemBuilder();
+//		
+//		builder.setTrans_id("abc123456789");	
+//		builder.setStation_id(1);
+//		builder.setStart_device_is_robot(true);		
+//		builder.setEnd_device_is_robot(false);
+//		builder.setStatus_id(2);
+//		builder.setPick_up_lat(-120.0);
+//		builder.setPick_up_lon(30.0);
+//		builder.setDeliver_location_lat(-100.0);
+//		builder.setDeliver_location_lon(10.0);
+//		builder.setTimestamp(123456789);
+//	
+//		s.createOrder(builder.build());
+//	}
 
 }

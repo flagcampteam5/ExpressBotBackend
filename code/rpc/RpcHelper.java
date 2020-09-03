@@ -2,15 +2,10 @@ package rpc;
 
 import java.io.IOException;
 
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import entity.Item;
-import entity.Item.ItemBuilder;
 
 public class RpcHelper {
 	// Writes a JSONArray to http response.

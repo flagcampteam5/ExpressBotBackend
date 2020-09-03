@@ -16,7 +16,7 @@ public class TaskQCreation {
 	public static void main(String[] args) {
 	     try {
 	    	 // Init sqs client
-	    	 String[] queuesName = {"a", "b", "c"};
+	    	 String[] queuesName = {"1", "2", "3"};
 			 SqsClient sqsClient = SqsClient.builder()
 			         .region(Region.US_WEST_2)
 			         .build();

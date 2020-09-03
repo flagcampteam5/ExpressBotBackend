@@ -1,7 +1,7 @@
 package robot;
 
 /**
- * This class is for creating robot threads.
+ * This class is for creating drone threads.
  */
 
 import software.amazon.awssdk.services.sqs.model.Message;
@@ -9,15 +9,15 @@ import software.amazon.awssdk.services.sqs.model.Message;
 import external.TaskQConnection;
 import db.MySQLConnection;
 
-public class Robot extends Thread implements Runnable {
+public class Drone extends Thread implements Runnable {
 	String station;
 	String id;
 	TaskQConnection conn;
 
-	public Robot(String station) {
+	public Drone(String station) {
 		super();
 		this.station = station;
-		this.id = "robot" + System.currentTimeMillis();
+		this.id = "drone" + System.currentTimeMillis();
 		this.conn = new TaskQConnection();
 	}
 
@@ -25,7 +25,7 @@ public class Robot extends Thread implements Runnable {
 	public void run() {
 		// System.out.println("working");
 		while (true) {
-			Message message = conn.dequeue(station, "robot");
+			Message message = conn.dequeue(station, "drone");
 			String order_id;
 			if (message != null) {
 				order_id = message.body().substring(5);
